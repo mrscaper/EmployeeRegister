@@ -1,0 +1,17 @@
+﻿@model IEnumerable<DAL.Models.Employer>
+
+
+<ul>
+    @{
+        foreach (var employer in Model)
+        {
+            <li id="Employer_@employer.Id"
+                data-jstree='{"icon":"glyphicon glyphicon-home"}'
+                data-type="@typeof(DAL.Models.Employer)"
+                @if (employer.SubContractors.Count > 0 || employer.Employees.Count > 0) { @: class="jstree-closed"
+                }>
+                @employer.Name
+            </li>
+        }
+    }
+</ul>

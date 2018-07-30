@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="c0747419415044e2831ee56a2b5f7edc" Name="Diagram1">
+        <EntityTypeShape EntityType="RegisterModel.Employee" Width="1.5" PointX="4.25" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="RegisterModel.Employer" Width="2" PointX="0.75" PointY="1" IsExpanded="true" />
+        <AssociationConnector Association="RegisterModel.FK_Employee_ToEmployer" ManuallyRouted="false" />
+        <AssociationConnector Association="RegisterModel.FK_Employer_ToEmployer" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

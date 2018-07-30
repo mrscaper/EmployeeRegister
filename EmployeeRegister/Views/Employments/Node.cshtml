@@ -1,0 +1,24 @@
+﻿@model Tuple<IEnumerable<DAL.Models.Employee>, IEnumerable<DAL.Models.Employer>>
+
+<ul>
+    @{
+        foreach (var employee in Model.Item1)
+        {
+            <li id="Employee_@employee.Id"
+                data-jstree='{"icon":"glyphicon glyphicon-user"}'
+                data-type="@typeof(DAL.Models.Employee)">
+                @employee.Name
+            </li>
+        }
+        foreach (var employer in Model.Item2)
+        {
+            <li id="Employer_@employer.Id"
+                data-jstree='{"icon":"glyphicon glyphicon-home"}'
+                data-type="@typeof(DAL.Models.Employer)"
+                @if (employer.SubContractors.Count > 0 || employer.Employees.Count > 0) { @: class="jstree-closed"
+                }>
+                @employer.Name
+            </li>
+        }
+    }
+</ul>

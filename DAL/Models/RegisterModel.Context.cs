@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EmployeeRegister.Models
+namespace DAL.Models
 {
     using System;
     using System.Data.Entity;

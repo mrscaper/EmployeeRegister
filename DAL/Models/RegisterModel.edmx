@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="RegisterModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="RegisterModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Employee">
           <Key>
             <PropertyRef Name="Id" />
@@ -60,48 +60,37 @@
             <End Role="Employer1" EntitySet="Employer" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="RegisterModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityContainer Name="RegisterEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Employees" EntityType="RegisterModel.Employee" />
-          <EntitySet Name="Employers" EntityType="RegisterModel.Employer" />
-          <AssociationSet Name="FK_Employee_ToEmployer" Association="RegisterModel.FK_Employee_ToEmployer">
-            <End Role="Employer" EntitySet="Employers" />
-            <End Role="Employee" EntitySet="Employees" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Employer_ToEmployer" Association="RegisterModel.FK_Employer_ToEmployer">
-            <End Role="Employer" EntitySet="Employers" />
-            <End Role="Employer1" EntitySet="Employers" />
-          </AssociationSet>
-        </EntityContainer>
         <EntityType Name="Employee">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Deleted" Type="Boolean" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="true" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="true" Unicode="true" Nullable="false" />
           <Property Name="Email" Type="String" MaxLength="255" FixedLength="true" Unicode="true" />
           <Property Name="EmployerId" Type="Int32" />
-          <NavigationProperty Name="Employer" Relationship="RegisterModel.FK_Employee_ToEmployer" FromRole="Employee" ToRole="Employer" />
+          <NavigationProperty Name="Employer" Relationship="Self.FK_Employee_ToEmployer" FromRole="Employee" ToRole="Employer" />
         </EntityType>
         <EntityType Name="Employer">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="255" FixedLength="true" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="true" Unicode="true" Nullable="false" />
           <Property Name="Deleted" Type="Boolean" />
           <Property Name="EmployerId" Type="Int32" />
-          <NavigationProperty Name="Employees" Relationship="RegisterModel.FK_Employee_ToEmployer" FromRole="Employer" ToRole="Employee" />
-          <NavigationProperty Name="SubContractors" Relationship="RegisterModel.FK_Employer_ToEmployer" FromRole="Employer" ToRole="Employer1" />
-          <NavigationProperty Name="GeneralContractor" Relationship="RegisterModel.FK_Employer_ToEmployer" FromRole="Employer1" ToRole="Employer" />
+          <NavigationProperty Name="Employees" Relationship="Self.FK_Employee_ToEmployer" FromRole="Employer" ToRole="Employee" />
+          <NavigationProperty Name="SubContractors" Relationship="Self.FK_Employer_ToEmployer" FromRole="Employer" ToRole="Employer1" />
+          <NavigationProperty Name="GeneralContractor" Relationship="Self.FK_Employer_ToEmployer" FromRole="Employer1" ToRole="Employer" />
         </EntityType>
         <Association Name="FK_Employee_ToEmployer">
-          <End Type="RegisterModel.Employer" Role="Employer" Multiplicity="0..1" />
-          <End Type="RegisterModel.Employee" Role="Employee" Multiplicity="*" />
+          <End Role="Employer" Type="Self.Employer" Multiplicity="0..1" />
+          <End Role="Employee" Type="Self.Employee" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Employer">
               <PropertyRef Name="Id" />
@@ -112,8 +101,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Employer_ToEmployer">
-          <End Type="RegisterModel.Employer" Role="Employer" Multiplicity="0..1" />
-          <End Type="RegisterModel.Employer" Role="Employer1" Multiplicity="*" />
+          <End Role="Employer" Type="Self.Employer" Multiplicity="0..1" />
+          <End Role="Employer1" Type="Self.Employer" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Employer">
               <PropertyRef Name="Id" />
@@ -123,7 +112,19 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        </Schema>
+        <EntityContainer Name="RegisterEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Employees" EntityType="Self.Employee" />
+          <EntitySet Name="Employers" EntityType="Self.Employer" />
+          <AssociationSet Name="FK_Employee_ToEmployer" Association="Self.FK_Employee_ToEmployer">
+            <End Role="Employer" EntitySet="Employers" />
+            <End Role="Employee" EntitySet="Employees" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Employer_ToEmployer" Association="Self.FK_Employer_ToEmployer">
+            <End Role="Employer" EntitySet="Employers" />
+            <End Role="Employer1" EntitySet="Employers" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -132,21 +133,21 @@
           <EntitySetMapping Name="Employees">
             <EntityTypeMapping TypeName="RegisterModel.Employee">
               <MappingFragment StoreEntitySet="Employee">
-                <ScalarProperty Name="EmployerId" ColumnName="EmployerId" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="EmployerId" ColumnName="EmployerId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Employers">
             <EntityTypeMapping TypeName="RegisterModel.Employer">
               <MappingFragment StoreEntitySet="Employer">
-                <ScalarProperty Name="EmployerId" ColumnName="EmployerId" />
-                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Deleted" ColumnName="Deleted" />
+                <ScalarProperty Name="EmployerId" ColumnName="EmployerId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

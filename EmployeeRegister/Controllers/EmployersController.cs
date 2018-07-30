@@ -6,7 +6,8 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using EmployeeRegister.Models;
+using DAL;
+using DAL.Models;
 
 namespace EmployeeRegister.Controllers
 {
@@ -68,7 +69,7 @@ namespace EmployeeRegister.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Employer employer = db.Employers.Find(id);
+            var employer = EmployersManager.Instance.Get(id.Value);
             if (employer == null)
             {
                 return HttpNotFound();

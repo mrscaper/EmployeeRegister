@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'D:\Workspace\Euro One\EmployeeRegister\EmployeeRegister\Models\RegisterModel.edmx'. 
+﻿// T4 code generation is enabled for model 'D:\Workspace\Euro One\EmployeeRegister\DAL\Models\RegisterModel.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.
