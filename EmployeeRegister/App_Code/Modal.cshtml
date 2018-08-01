@@ -1,0 +1,67 @@
+﻿@functions{
+    // These are workarounds for IntelliSense compatibility, they do not warrant
+    // Compiler Warning (level 2) CS1587
+    // XML comment is not placed on a valid language element
+    // Recommended tags for documentation comments are not allowed on all language elements.
+    // For example, a tag is not allowed on a namespace.
+    // For more information on XML comments, see Recommended Tags for Documentation Comments.
+    #pragma warning disable 1587
+}
+@functions
+{
+    /// <summary>
+    /// Renders a button to trigger a modal.
+    /// </summary>
+    /// <param name="label">Contained text.</param>
+    /// <param name="target">HTML id.</param>
+    /// <param name="style">Bootstrap CSS class.</param>
+    /// <param name="size">Bootstrap CSS class.</param>
+    /// <returns>Custom HTML.</returns>
+}
+@helper TriggerButton(string label, string target, string style = "btn-primary", string size = "btn-lg")
+{
+    <button type="button" class="btn @style @size" data-toggle="modal" data-target="@target">
+        @label
+    </button>
+}
+@functions
+{
+    /// <summary>
+    /// Renders a modal window
+    /// </summary>
+    /// <param name="id">HTML Id.</param>
+    /// <param name="title">Title text.</param>
+    /// <param name="content">HTML content</param>
+    /// <param name="buttons">List off buttons to append.</param>
+    /// <returns>Custom HTML.</returns>
+}
+@helper Window(string id, string title, string content, List<(string label, string style, string size, string onClick)> buttons)
+{
+    <div class="modal fade" id="@id" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">@title</h4>
+                </div>
+                <div class="modal-body">
+                    @content
+                </div>
+                <div class="modal-footer">
+                    @if (buttons != null)
+                    {
+                        foreach (var button in buttons)
+                        {
+                            <button type="button" class="btn @button.style @button.size" data-dismiss="modal" onclick="@button.onClick">@button.label</button>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@functions
+{
+#pragma warning restore 1587
+}

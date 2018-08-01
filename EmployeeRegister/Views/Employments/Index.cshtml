@@ -8,64 +8,15 @@
     </div>
 </div>
 <div id="DetailsContainer" class="col-sm-11 col-lg-6 card">
-    <button class="btn btn-primary">New</button>
     <div id="DetailsContent">
     </div>
 </div>
 
 @section scripts
 {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
     <script language="javascript">
-        $(function() {
-            $(function() {
-                $('#TreeContent').jstree({
-                    'core': {
-                        'data': {
-                            'url': '@Url.Action("GetNode")',
-                            'data': function(node) {
-                                let nodeId = node.id.split('_').pop();
-                                return { 'id': nodeId }
-                            }
-                        },
-                        "themes" : {
-                            "variant" : "large"
-                        }
-                    }
-                }).on('select_node.jstree',
-                    function (node, selected, event) {
-                        let nodeInfo = selected.node.id.split('_');
-                        let nodeId = nodeInfo.pop();
-                        let nodeType = nodeInfo.pop();
-
-                        if (nodeType == "Employer") {
-                            $.ajax({
-                                type: "GET",
-                                url: '@Url.Action("Edit", "Employers")/' + nodeId,
-                                data: function () {
-                                    return {'id': nodeId};
-                                },
-                                success:
-                                    function(data) {
-                                        $('#DetailsContent').html(data);
-                                    }
-                            });
-                        }
-                        if (nodeType == "Employee") {
-                            $.ajax({
-                                type: "GET",
-                                url: '@Url.Action("Edit", "Employees")/' + nodeId,
-                                data: function () {
-                                    return { 'id': nodeId};
-                                },
-                                success:
-                                    function(data) {
-                                        $('#DetailsContent').html(data);
-                                    }
-                            });
-                        }
-            });
-        });
+        $(document).ready(function() {
+            TreeView.initialize('@Url.Action("GetNode")', '@Url.Action("Edit", "Employers")');
         });
     </script>
 }

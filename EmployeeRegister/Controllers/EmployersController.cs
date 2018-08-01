@@ -95,30 +95,32 @@ namespace EmployeeRegister.Controllers
             return View(employer);
         }
 
-        // GET: Employers/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Employer employer = db.Employers.Find(id);
-            if (employer == null)
-            {
-                return HttpNotFound();
-            }
-            return View(employer);
-        }
+        //// GET: Employers/Delete/5
+        //public ActionResult Delete(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+        //    Employer employer = db.Employers.Find(id);
+        //    if (employer == null)
+        //    {
+        //        return HttpNotFound();
+        //    }
+        //    return View(employer);
+        //}
 
         // POST: Employers/Delete/5
-        [HttpPost, ActionName("Delete")]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult Delete(int id)
         {
-            Employer employer = db.Employers.Find(id);
-            employer.Deleted = true;
-            db.SaveChanges();
-            return RedirectToAction("Index");
+            return EmployersManager.Instance.Delete(id) ? new HttpStatusCodeResult(HttpStatusCode.OK) : new HttpStatusCodeResult(HttpStatusCode.NotFound);
         }
 
         protected override void Dispose(bool disposing)

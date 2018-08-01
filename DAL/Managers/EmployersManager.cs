@@ -73,5 +73,26 @@ namespace DAL
                 return employer;
             }
         }
+
+        /// <summary>
+        /// Soft deletes a single Employer
+        /// </summary>
+        /// <param name="id">Employer</param>
+        /// <returns>True if successful.</returns>
+        public bool Delete(int id)
+        {
+            using (var db =new RegisterEntities())
+            {
+                var employer=db.Employers.Find(id);
+                if (employer != null)
+                {
+                    employer.Deleted = true;
+                    db.SaveChanges();
+                    return true;
+                }
+            }
+
+            return false;
+        }
     }
 }
