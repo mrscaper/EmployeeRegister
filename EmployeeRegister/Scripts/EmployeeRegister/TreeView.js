@@ -1,40 +1,40 @@
 ﻿var TreeView = (function () {
-    let selection = {}
-    let url = {}
+    let selection = {};
+    let url = {};
 
-    let setUrls = function (rootUrl, employersUrl, employeesUrl) {
+    let setUrls = function(rootUrl, employersUrl, employeesUrl) {
         url.root = rootUrl;
         url.employers = employersUrl;
         url.employees = employeesUrl;
-    }
+    };
 
-    let loadEmployerNode = function (id) {
+    let loadEmployerNode = function(id) {
         $.ajax({
             type: "GET",
             url: url.employers + "/" + id,
-            data: function () {
+            data: function() {
                 return { 'id': id };
             },
             success:
-                function (data) {
+                function(data) {
                     $('#DetailsContent').html(data);
                 }
         });
-    }
+    };
 
-    let loadEmployeeNode = function (id) {
+    let loadEmployeeNode = function(id) {
         $.ajax({
             type: "GET",
             url: url.employee + "/" + id,
-            data: function () {
+            data: function() {
                 return { 'id': id };
             },
             success:
-                function (data) {
+                function(data) {
                     $('#DetailsContent').html(data);
                 }
         });
-    }
+    };
 
     let selectHandler = function (node, selected, event) {
         selection = selected;
@@ -50,34 +50,34 @@
         }
     };
 
-    var initializeTreeView = function () {
-        $(function () {
+    var initializeTreeView = function() {
+        $(function() {
             $('#TreeContent').jstree({
                 'core': {
                     'data': {
                         'url': url.root,
-                        'data': function (node) {
+                        'data': function(node) {
                             let nodeId = node.id.split('_').pop();
-                            return { 'id': nodeId }
+                            return { 'id': nodeId };
                         }
                     },
                     "themes": {
                         "variant": "large"
                     }
                 }
-            }).on('select_node.jstree',
-                function (node, selected, event) {
-                    selectHandler(node, selected, event)
+            }).on("select_node.jstree", 
+                function(node, selected, event) {
+                    selectHandler(node, selected, event);
                 });
         });
-    }
+    };
 
     return {
-        getSelected: function () { return selected; },
-        getSelectedNode: function () { return Selection.node; },
-        initialize: function (rootUrl, employersUrl, employeesUrl) {
+        getSelected: function() { return selected; },
+        getSelectedNode: function() { return Selection.node; },
+        initialize: function(rootUrl, employersUrl, employeesUrl) {
             setUrls(rootUrl, employersUrl, employeesUrl);
             initializeTreeView();
         }
-    }
+    };
 })();
