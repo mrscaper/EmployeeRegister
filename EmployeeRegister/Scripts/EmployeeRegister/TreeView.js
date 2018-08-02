@@ -25,7 +25,7 @@
     let loadEmployeeNode = function(id) {
         $.ajax({
             type: "GET",
-            url: url.employee + "/" + id,
+            url: url.employees + "/" + id,
             data: function() {
                 return { 'id': id };
             },

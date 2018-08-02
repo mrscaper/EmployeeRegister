@@ -76,7 +76,7 @@ namespace EmployeeRegister.Controllers
                 return HttpNotFound();
             }
             ViewBag.EmployerId = new SelectList(db.Employers, "Id", "Name", employee.EmployerId);
-            return View(employee);
+            return PartialView(employee);
         }
 
         // POST: Employees/Edit/5
