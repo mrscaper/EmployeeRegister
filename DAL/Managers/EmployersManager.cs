@@ -31,7 +31,7 @@ namespace DAL
                 var employers = db.Employers
                     .Where(e => e.Deleted != true)
                     .Where(e => e.GeneralContractor == null || !independent)
-                    .Include(e => e.SubContractors)
+                    .Include(e => e.SubContractors.Where(s=>s.Deleted!=true))
                     .Include(e => e.Employees)
                     .ToList();
                 return employers;

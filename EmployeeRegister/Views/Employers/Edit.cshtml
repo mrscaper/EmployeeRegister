@@ -30,44 +30,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <input type="submit" value="Save" class="btn btn-default" />
-                @Modal.TriggerButton("Delete", "#deleteConfirmation", "btn-danger","btn-md")
             </div>
         </div>
     </div>
-}
-
-<div>
-    @{
-        var buttons = new List<(string label, string style, string size, string onClick)>();
-        buttons.Add(("Yes","btn-warning","btn-md",$"deleteEmployer({@Model.Id})"));
-    }
-    @Modal.Window("deleteConfirmation", "Delete", $"Please confirm if you would like to delete {Model.Name}.",buttons)
-
-
-</div>
-
-@* TODO place in separate file because sections dont work with partial views by design *@
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-    <script language="javascript">
-        function deleteEmployer(id) {
-            var token = $('[name=__RequestVerificationToken]').val();
-            $.ajax({
-                type: "POST",
-                url: '@Url.Action("Delete", "Employers")',
-                data: {
-                    'id': id,
-                    '__RequestVerificationToken': token,
-                },
-                headers: function() {
-                },
-                dataType: 'json',
-                contentType: 'application/x-www-form-urlencoded; charset=utf-8',
-                success:
-                    function() {
-                        $('#jstree').jstree(true).refresh();
-                    }
-            });
-        };
-    </script>
 }
