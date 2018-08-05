@@ -52,7 +52,7 @@ namespace DAL
             {
                 var subContractors = db.Employers
                     .Single(e => e.Id == id)
-                    .SubContractors;
+                    .SubContractors.Where(s=>s.Deleted!=true);
                 foreach (var subContractor in subContractors)
                 {
                     subContractor.SubContractors = subContractor.SubContractors.Where(s => s.Deleted != true).ToList();
@@ -72,8 +72,6 @@ namespace DAL
             using (var db =new RegisterEntities())
             {
                 var employer = db.Employers
-                    //.Include(e=>e.Employees)
-                    //.Include(e=>e.SubContractors)
                     .Single(e=>e.Id==id);
                 employer.SubContractors = employer.SubContractors.Where(s => s.Deleted != true).ToList();
                 employer.Employees = employer.Employees.Where(e => e.Deleted != true).ToList();
@@ -103,11 +101,18 @@ namespace DAL
         }
 
 
-        public object GetSelectList()
+        public object GetSelectList(int? id)
         {
             using (var db=new RegisterEntities())
             {
-                return new SelectList(db.Employers.ToList(), "Id", "Name");
+                if (id.HasValue)
+                {
+                    return new SelectList(db.Employers.ToList(), "Id", "Name", id.Value);
+                }
+                else
+                {
+                    return new SelectList(db.Employers.ToList(), "Id", "Name");
+                }
             }
         }
 

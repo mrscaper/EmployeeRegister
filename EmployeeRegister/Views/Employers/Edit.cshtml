@@ -2,7 +2,7 @@
 
 <h2>Edit</h2>
 
-@using (Html.BeginForm())
+@using (Ajax.BeginForm("Edit","Employers",null,new AjaxOptions{HttpMethod = "Post",OnSuccess = "EditSuccess" }))
 {
     @Html.AntiForgeryToken()
     
@@ -36,3 +36,9 @@
         </div>
     </div>
 }
+
+<script language="javascript">
+    function EditSuccess(result) {
+        TreeView.EditSuccess(result);
+    }
+</script>

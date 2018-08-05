@@ -7,7 +7,7 @@
 <h2>Edit</h2>
 
 
-@using (Html.BeginForm())
+@using (Ajax.BeginForm("Edit", "Employees", null, new AjaxOptions { HttpMethod = "Post", OnSuccess = "EditSuccess" }))
 {
     @Html.AntiForgeryToken()
     
@@ -50,9 +50,11 @@
 </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
+<script language="javascript">
+    function EditSuccess(result) {
+        TreeView.EditSuccess(result);
+    }
+</script>
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

@@ -13,7 +13,6 @@
         container = $("#" + containerId);
         url.employers.new = newEmployersUrl;
         url.employees.new = newEmployeesUrl;
-
     }
 
     let clear = function () {

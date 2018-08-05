@@ -195,6 +195,8 @@
     <Content Include="Scripts\EmployeeRegister\DetailView.js" />
     <Content Include="Scripts\EmployeeRegister\Particles.js" />
     <Content Include="Scripts\EmployeeRegister\TreeView.js" />
+    <Content Include="Scripts\jQuery\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jQuery\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jQuery\jquery-3.3.1.js" />
     <Content Include="Scripts\jQuery\jquery-3.3.1.min.js" />
     <Content Include="Scripts\jQuery\jquery-3.3.1.slim.js" />

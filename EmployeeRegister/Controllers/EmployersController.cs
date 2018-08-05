@@ -32,7 +32,7 @@ namespace EmployeeRegister.Controllers
         // GET: Employers/Create
         public ActionResult Create()
         {
-            ViewBag.EmployerId = EmployersManager.Instance.GetSelectList();
+            ViewBag.EmployerId = EmployersManager.Instance.GetSelectList(null);
             return PartialView();
         }
 
@@ -48,12 +48,14 @@ namespace EmployeeRegister.Controllers
                 EmployersManager.Instance.Add(employer);
                 return RedirectToAction("Index", "Employments");
             }
-
-            ViewBag.EmployerId = EmployersManager.Instance.GetSelectList();
             return RedirectToAction("Index", "Employments");
         }
 
-        // GET: Employers/Edit/5
+        /// <summary>
+        /// GET: Employers/Edit/5
+        /// </summary>
+        /// <param name="id">Employer</param>
+        /// <returns></returns>
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -65,33 +67,37 @@ namespace EmployeeRegister.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.EmployerId = EmployersManager.Instance.GetSelectList();
+            ViewBag.EmployerId = EmployersManager.Instance.GetSelectList(employer.EmployerId);
             return PartialView(employer);
         }
-
-        // POST: Employers/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+        
+        /// <summary>
+        /// POST: Employers/Edit/5
+        /// To protect from overposting attacks, please enable the specific properties you want to bind to, for
+        /// more details see https://go.microsoft.com/fwlink/?LinkId=317598. 
+        /// </summary>
+        /// <param name="employer">Employer entity</param>
+        /// <returns></returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name,Deleted,EmployerId")] Employer employer)
         {
             if (!ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return Json(new { success = false, detail = $"Editing {employer.Name} failed." }, JsonRequestBehavior.AllowGet);
             }
             else
             {
+                var oldEmployer = EmployersManager.Instance.Get(employer.Id);
                 if(EmployersManager.Instance.Modify(employer))
-                    return RedirectToAction("Index","Employments");
+                    return Json(new { success = true, newParent = employer.EmployerId.HasValue ? $"Employer_{employer.EmployerId}" : null,parent= oldEmployer.EmployerId.HasValue ? $"Employer_{oldEmployer.EmployerId}" : null }, JsonRequestBehavior.AllowGet);
                 else
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                    return Json(new { success = false, detail = $"Editing {employer.Name} failed." }, JsonRequestBehavior.AllowGet);
             }
         }
-
-        // POST: Employers/Delete/5
+        
         /// <summary>
-        /// 
+        /// POST: Employers/Delete/5
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -99,7 +105,16 @@ namespace EmployeeRegister.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
         {
-            return EmployersManager.Instance.Delete(id) ? new HttpStatusCodeResult(HttpStatusCode.OK) : new HttpStatusCodeResult(HttpStatusCode.NotFound);
+            var employer=EmployersManager.Instance.Get(id);
+
+            if (EmployersManager.Instance.Delete(id))
+            {
+                return Json(new { success = true, parent = employer.GeneralContractor!=null ? $"Employer_{employer.EmployerId}" : null }, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return Json(new { success = false, detail = $"Deleting {employer.Name} failed." }, JsonRequestBehavior.AllowGet);
+            }
         }
     }
 }

@@ -62,8 +62,8 @@ let TreeView = (function () {
         });
     };
 
-    let selectHandler = function (node, selectedd, event) {
-        selection = selectedd;
+    let selectHandler = function (node, select, event) {
+        selection = select;
         let selected = getSelected();
 
         if (selected.Type === "Employer") {
@@ -75,9 +75,10 @@ let TreeView = (function () {
     };
 
     let getSelected = function () {
-        let name = selection.node.id.split("_");
-        let id = name.pop();
-        let type = name.pop();
+        let name = selection.node.id;
+        let splitName = selection.node.id.split("_");
+        let id = splitName.pop();
+        let type = splitName.pop();
         let node = selection.node;
 
         let result =
@@ -107,14 +108,22 @@ let TreeView = (function () {
             contentType:
                 'application/x-www-form-urlencoded; charset=utf-8',
             success:
-                function () {
-                    alert("Ajax success");
+                function (response) {
+                    if (response.success) {
+                        DetailView.Clear();
+                        if (response.parent!=null) {
+                            TreeView.Refresh(response.parent);
+                        } else {
+                            TreeView.RefreshAll();
+                        }
+                    } else {
+                        alert(result.detail);
+                    }
                 },
             error:
                 function () {
-                    $('#TreeContent').jstree(true).hide_node(selection.node);
-                    DetailView.Clear();
-                },
+                    alert("An error occurred... Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information!");
+                }
 
         });
     };
@@ -127,23 +136,28 @@ let TreeView = (function () {
             url:
                 url.employees.delete + "/" + id,
             data:
-                {
-                    'id': id,
-                    '__RequestVerificationToken': token,
-                },
+            {
+                'id': id,
+                '__RequestVerificationToken': token,
+            },
             dataType:
                 'json',
             contentType:
                 'application/x-www-form-urlencoded; charset=utf-8',
             success:
-                function () {
-                    alert("Ajax success");
+                function (response) {
+                    if (response.success) {
+                        DetailView.Clear();
+                        TreeView.Refresh(response.parent);
+                    } else {
+                        alert(result.detail);
+                    }
                 },
             error:
                 function () {
-                    $('#TreeContent').jstree(true).hide_node(selection.node);
-                    DetailView.Clear();
+                    alert("An error occurred... Look at the console (F12 or Ctrl+Shift+I, Console tab) for more information!");
                 }
+
         });
     };
 
@@ -185,12 +199,35 @@ let TreeView = (function () {
 
     };
 
+    let editSuccessHandler = function(response) {
+        if (response.success) {
+            if (response.parent!=null) {
+                TreeView.Refresh(response.parent);
+            } else {
+                TreeView.RefreshAll();
+            }
+            if (response.newParent != null) {
+                TreeView.Refresh(response.newParent);
+            } else {
+                TreeView.RefreshAll();
+            }
+            
+        } else {
+            alert(response.detail);
+        }
+    }
+
     return {
         Selected: function () { return getSelected(); },
         Delete: function () { deleteHandler(); },
-        Initialize: function (rootUrl, employersEditUrl, employeesEditUrl, employersDeleteUrl) {
-            setUrls(rootUrl, employersEditUrl, employeesEditUrl, employersDeleteUrl);
+        Initialize: function (rootUrl, employersEditUrl, employeesEditUrl, employersDeleteUrl, employeesDeleteUrl) {
+            setUrls(rootUrl, employersEditUrl, employeesEditUrl, employersDeleteUrl, employeesDeleteUrl);
             initializeTreeView();
-        }
+        },
+        Tree: function () { return $('#TreeContent').jstree(true); },
+        RefreshSelected: function () { TreeView.Tree().refresh_node(TreeView.Selected().Name)},
+        Refresh: function (name) { TreeView.Tree().refresh_node(name) },
+        RefreshAll: function () { TreeView.Tree().refresh(); },
+        EditSuccess: function (result) { editSuccessHandler(result); }
     };
 })();

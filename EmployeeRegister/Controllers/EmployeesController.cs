@@ -14,15 +14,6 @@ namespace EmployeeRegister.Controllers
 {
     public class EmployeesController : Controller
     {
-        private RegisterEntities db = new RegisterEntities();
-
-        // GET: Employees
-        public ActionResult Index()
-        {
-            var employees = db.Employees.Include(e => e.Employer);
-            return View(employees.ToList());
-        }
-
         // GET: Employees/Details/5
         public ActionResult Details(int? id)
         {
@@ -30,7 +21,7 @@ namespace EmployeeRegister.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Employee employee = db.Employees.Find(id);
+            var employee = EmployeesManager.Instance.Get(id.Value);
             if (employee == null)
             {
                 return HttpNotFound();
@@ -41,7 +32,7 @@ namespace EmployeeRegister.Controllers
         // GET: Employees/Create
         public ActionResult Create()
         {
-            ViewBag.EmployerId = new SelectList(db.Employers, "Id", "Name");
+            ViewBag.EmployerId = EmployersManager.Instance.GetSelectList(null);
             return PartialView();
         }
 
@@ -52,17 +43,12 @@ namespace EmployeeRegister.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Deleted,Name,Email,EmployerId")] Employee employee)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            else
-            {
-                db.Employees.Add(employee);
-                db.SaveChanges();
-                ViewBag.EmployerId = new SelectList(db.Employers, "Id", "Name", employee.EmployerId);
+                EmployeesManager.Instance.Add(employee);
                 return RedirectToAction("Index", "Employments");
             }
+            return RedirectToAction("Index", "Employments");
         }
 
         // GET: Employees/Edit/5
@@ -72,12 +58,12 @@ namespace EmployeeRegister.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Employee employee = db.Employees.Find(id);
+            var employee = EmployeesManager.Instance.Get(id.Value);
             if (employee == null)
             {
                 return HttpNotFound();
             }
-            ViewBag.EmployerId = new SelectList(db.Employers, "Id", "Name", employee.EmployerId);
+            ViewBag.EmployerId = EmployersManager.Instance.GetSelectList(employee.EmployerId);
             return PartialView(employee);
         }
 
@@ -90,41 +76,33 @@ namespace EmployeeRegister.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return Json(new { success = false, detail = $"Editing {employee.Name} failed." }, JsonRequestBehavior.AllowGet);
             }
             else
             {
-                db.Entry(employee).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index","Employments");
+                var oldEmployee = EmployeesManager.Instance.Get(employee.Id);
+                if (EmployeesManager.Instance.Modify(employee))
+                    return Json(new { success = true, newParent = employee.EmployerId.HasValue ? $"Employer_{employee.EmployerId}" : null, parent = oldEmployee.EmployerId.HasValue ? $"Employer_{oldEmployee.EmployerId}" : null }, JsonRequestBehavior.AllowGet);
+                else
+                    return Json(new { success = false, detail = $"Editing {employee.Name} failed." }, JsonRequestBehavior.AllowGet);
             }
         }
 
         // GET: Employees/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete([Bind(Include = "id")]int? id)
+        public ActionResult Delete(int id)
         {
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
-            if (id == null)
+            var employee = EmployeesManager.Instance.Get(id);
+            if (EmployeesManager.Instance.Delete(id))
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return Json(new { success = true, parent = $"Employer_{employee.EmployerId}" }, JsonRequestBehavior.AllowGet);
             }
-            Employee employee = db.Employees.Find(id);
-            if (employee == null)
+            else
             {
-                return HttpNotFound();
+                return Json(new { success = false, responseText = "Your message successfuly sent!" }, JsonRequestBehavior.AllowGet);
             }
-            return View(employee);
-        }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }
