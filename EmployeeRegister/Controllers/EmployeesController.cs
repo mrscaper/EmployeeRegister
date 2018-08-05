@@ -43,12 +43,19 @@ namespace EmployeeRegister.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Deleted,Name,Email,EmployerId")] Employee employee)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                EmployeesManager.Instance.Add(employee);
-                return RedirectToAction("Index", "Employments");
+                return Json(new { success = false, detail = $"Adding {employee.Name} failed." },
+                    JsonRequestBehavior.AllowGet);
             }
-            return RedirectToAction("Index", "Employments");
+            else
+            {
+                if (EmployeesManager.Instance.Add(employee))
+                    return Json(new { success = true, parent = employee.EmployerId.HasValue ? $"Employer_{employee.EmployerId}" : null }, JsonRequestBehavior.AllowGet);
+                else
+                    return Json(new { success = false, detail = $"Adding {employee.Name} failed." },
+                        JsonRequestBehavior.AllowGet);
+            }
         }
 
         // GET: Employees/Edit/5

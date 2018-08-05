@@ -43,12 +43,19 @@ namespace EmployeeRegister.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Name,Deleted,EmployerId")] Employer employer)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                EmployersManager.Instance.Add(employer);
-                return RedirectToAction("Index", "Employments");
+                return Json(new { success = false, detail = $"Adding {employer.Name} failed." },
+                    JsonRequestBehavior.AllowGet);
             }
-            return RedirectToAction("Index", "Employments");
+            else
+            {
+                if (EmployersManager.Instance.Add(employer))
+                    return Json(new { success = true, parent = employer.EmployerId.HasValue ? $"Employer_{employer.EmployerId}" : null }, JsonRequestBehavior.AllowGet);
+                else
+                    return Json(new { success = false, detail = $"Adding {employer.Name} failed." },
+                        JsonRequestBehavior.AllowGet);
+            }
         }
 
         /// <summary>
@@ -70,7 +77,7 @@ namespace EmployeeRegister.Controllers
             ViewBag.EmployerId = EmployersManager.Instance.GetSelectList(employer.EmployerId);
             return PartialView(employer);
         }
-        
+
         /// <summary>
         /// POST: Employers/Edit/5
         /// To protect from overposting attacks, please enable the specific properties you want to bind to, for
@@ -89,13 +96,13 @@ namespace EmployeeRegister.Controllers
             else
             {
                 var oldEmployer = EmployersManager.Instance.Get(employer.Id);
-                if(EmployersManager.Instance.Modify(employer))
-                    return Json(new { success = true, newParent = employer.EmployerId.HasValue ? $"Employer_{employer.EmployerId}" : null,parent= oldEmployer.EmployerId.HasValue ? $"Employer_{oldEmployer.EmployerId}" : null }, JsonRequestBehavior.AllowGet);
+                if (EmployersManager.Instance.Modify(employer))
+                    return Json(new { success = true, newParent = employer.EmployerId.HasValue ? $"Employer_{employer.EmployerId}" : null, parent = oldEmployer.EmployerId.HasValue ? $"Employer_{oldEmployer.EmployerId}" : null }, JsonRequestBehavior.AllowGet);
                 else
                     return Json(new { success = false, detail = $"Editing {employer.Name} failed." }, JsonRequestBehavior.AllowGet);
             }
         }
-        
+
         /// <summary>
         /// POST: Employers/Delete/5
         /// </summary>
@@ -105,11 +112,11 @@ namespace EmployeeRegister.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
         {
-            var employer=EmployersManager.Instance.Get(id);
+            var employer = EmployersManager.Instance.Get(id);
 
             if (EmployersManager.Instance.Delete(id))
             {
-                return Json(new { success = true, parent = employer.GeneralContractor!=null ? $"Employer_{employer.EmployerId}" : null }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = true, parent = employer.GeneralContractor != null ? $"Employer_{employer.EmployerId}" : null }, JsonRequestBehavior.AllowGet);
             }
             else
             {

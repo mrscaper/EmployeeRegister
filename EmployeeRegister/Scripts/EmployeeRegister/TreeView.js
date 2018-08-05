@@ -217,6 +217,19 @@ let TreeView = (function () {
         }
     }
 
+    let addSuccessHandler = function (response) {
+        if (response.success) {
+            if (response.parent != null) {
+                TreeView.Refresh(response.parent);
+            } else {
+                TreeView.RefreshAll();
+            }
+
+        } else {
+            alert(response.detail);
+        }
+    }
+
     return {
         Selected: function () { return getSelected(); },
         Delete: function () { deleteHandler(); },
@@ -228,6 +241,7 @@ let TreeView = (function () {
         RefreshSelected: function () { TreeView.Tree().refresh_node(TreeView.Selected().Name)},
         Refresh: function (name) { TreeView.Tree().refresh_node(name) },
         RefreshAll: function () { TreeView.Tree().refresh(); },
-        EditSuccess: function (result) { editSuccessHandler(result); }
+        EditSuccess: function (result) { editSuccessHandler(result); },
+        AddSuccess: function (result) { addSuccessHandler(result); }
     };
 })();
