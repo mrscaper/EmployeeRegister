@@ -23,6 +23,7 @@ namespace EmployeeRegister
                       "~/Scripts//Bootstrap/bootstrap.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/employeeRegister").Include(
+                      "~/Scripts//EmployeeRegister/DetailView.js",
                       "~/Scripts//EmployeeRegister/TreeView.js",
                       "~/Scripts//EmployeeRegister/Particles.js"));
 

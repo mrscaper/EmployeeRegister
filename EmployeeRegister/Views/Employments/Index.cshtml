@@ -5,7 +5,9 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
 <div id="TreeContainer" class="col-sm-11 col-lg-5 card">
     <div class="col-sm-12">
-        @Modal.TriggerButton("Delete", "#deleteConfirmation", "btn-danger","btn-md")
+        <button class="btn btn-success btn-md" onclick="DetailView.NewEmployer()">New Employer</button>
+        <button class="btn btn-success btn-md" onclick="DetailView.NewEmployee()">New Employee</button>
+        @Modal.TriggerButton("Delete", "#deleteConfirmation", "btn-danger", "btn-md")
     </div>
     <div class="col-sm-12" id="TreeContent">
     </div>
@@ -17,15 +19,24 @@
 
 @{
     var buttons = new List<(string label, string style, string size, string onClick)>();
-    buttons.Add(("Yes","btn-warning","btn-md",$"TreeView.delete()"));
+    buttons.Add(("Yes", "btn-warning", "btn-md", $"TreeView.Delete()"));
 }
-@Modal.Window("deleteConfirmation", "Delete", $"Please confirm if you would like to delete.",buttons)
+@Modal.Window("deleteConfirmation", "Delete", $"Please confirm if you would like to delete.", buttons)
 
 @section scripts
 {
     <script language="javascript">
-        $(document).ready(function() {
-            TreeView.initialize('@Url.Action("GetNode")', '@Url.Action("Edit", "Employers")', '@Url.Action("Edit", "Employees")','@Url.Action("Delete", "Employers")','@Url.Action("Delete", "Employees")');
+        $(document).ready(function () {
+            DetailView.Initialize(
+                'DetailsContainer',
+                '@Url.Action("Create", "Employers")',
+                '@Url.Action("Create", "Employees")');
+            TreeView.Initialize(
+                '@Url.Action("GetNode")',
+                '@Url.Action("Edit", "Employers")',
+                '@Url.Action("Edit", "Employees")',
+                '@Url.Action("Delete", "Employers")',
+                '@Url.Action("Delete", "Employees")');
         });
     </script>
 }

@@ -192,6 +192,7 @@
     </Content>
     <Content Include="App_Code\Modal.cshtml" />
     <None Include="Scripts\jQuery\jquery-3.3.1.intellisense.js" />
+    <Content Include="Scripts\EmployeeRegister\DetailView.js" />
     <Content Include="Scripts\EmployeeRegister\Particles.js" />
     <Content Include="Scripts\EmployeeRegister\TreeView.js" />
     <Content Include="Scripts\jQuery\jquery-3.3.1.js" />

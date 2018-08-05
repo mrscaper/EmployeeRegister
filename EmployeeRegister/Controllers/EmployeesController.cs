@@ -42,7 +42,7 @@ namespace EmployeeRegister.Controllers
         public ActionResult Create()
         {
             ViewBag.EmployerId = new SelectList(db.Employers, "Id", "Name");
-            return View();
+            return PartialView();
         }
 
         // POST: Employees/Create
@@ -52,15 +52,17 @@ namespace EmployeeRegister.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Deleted,Name,Email,EmployerId")] Employee employee)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            else
             {
                 db.Employees.Add(employee);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                ViewBag.EmployerId = new SelectList(db.Employers, "Id", "Name", employee.EmployerId);
+                return RedirectToAction("Index", "Employments");
             }
-
-            ViewBag.EmployerId = new SelectList(db.Employers, "Id", "Name", employee.EmployerId);
-            return View(employee);
         }
 
         // GET: Employees/Edit/5
@@ -86,14 +88,16 @@ namespace EmployeeRegister.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Deleted,Name,Email,EmployerId")] Employee employee)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            else
             {
                 db.Entry(employee).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                return RedirectToAction("Index","Employments");
             }
-            ViewBag.EmployerId = new SelectList(db.Employers, "Id", "Name", employee.EmployerId);
-            return View(employee);
         }
 
         // GET: Employees/Delete/5

@@ -13,14 +13,6 @@ namespace EmployeeRegister.Controllers
 {
     public class EmployersController : Controller
     {
-        private RegisterEntities db = new RegisterEntities();
-
-        // GET: Employers
-        public ActionResult Index()
-        {
-            var employers = db.Employers.Include(e => e.GeneralContractor).Where(e=>e.Deleted!=true);
-            return View(employers.ToList());
-        }
 
         // GET: Employers/Details/5
         public ActionResult Details(int? id)
@@ -29,7 +21,7 @@ namespace EmployeeRegister.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Employer employer = db.Employers.Find(id);
+            Employer employer = EmployersManager.Instance.Get(id.Value);
             if (employer == null)
             {
                 return HttpNotFound();
@@ -40,8 +32,8 @@ namespace EmployeeRegister.Controllers
         // GET: Employers/Create
         public ActionResult Create()
         {
-            ViewBag.EmployerId = new SelectList(db.Employers, "Id", "Name");
-            return View();
+            ViewBag.EmployerId = EmployersManager.Instance.GetSelectList();
+            return PartialView();
         }
 
         // POST: Employers/Create
@@ -53,13 +45,12 @@ namespace EmployeeRegister.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Employers.Add(employer);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                EmployersManager.Instance.Add(employer);
+                return RedirectToAction("Index", "Employments");
             }
 
-            ViewBag.EmployerId = new SelectList(db.Employers, "Id", "Name", employer.EmployerId);
-            return View(employer);
+            ViewBag.EmployerId = EmployersManager.Instance.GetSelectList();
+            return RedirectToAction("Index", "Employments");
         }
 
         // GET: Employers/Edit/5
@@ -74,7 +65,7 @@ namespace EmployeeRegister.Controllers
             {
                 return HttpNotFound();
             }
-            ViewBag.EmployerId = new SelectList(db.Employers, "Id", "Name", employer.EmployerId);
+            ViewBag.EmployerId = EmployersManager.Instance.GetSelectList();
             return PartialView(employer);
         }
 
@@ -85,30 +76,18 @@ namespace EmployeeRegister.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name,Deleted,EmployerId")] Employer employer)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                db.Entry(employer).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            ViewBag.EmployerId = new SelectList(db.Employers, "Id", "Name", employer.EmployerId);
-            return View(employer);
+            else
+            {
+                if(EmployersManager.Instance.Modify(employer))
+                    return RedirectToAction("Index","Employments");
+                else
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
         }
-
-        //// GET: Employers/Delete/5
-        //public ActionResult Delete(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //    }
-        //    Employer employer = db.Employers.Find(id);
-        //    if (employer == null)
-        //    {
-        //        return HttpNotFound();
-        //    }
-        //    return View(employer);
-        //}
 
         // POST: Employers/Delete/5
         /// <summary>
@@ -121,15 +100,6 @@ namespace EmployeeRegister.Controllers
         public ActionResult Delete(int id)
         {
             return EmployersManager.Instance.Delete(id) ? new HttpStatusCodeResult(HttpStatusCode.OK) : new HttpStatusCodeResult(HttpStatusCode.NotFound);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

@@ -22,6 +22,8 @@ namespace DAL.Models
 #pragma warning disable 0649
             [Required] [MaxLength(255)] public string Name { get; set; }
             [EmailAddress] public string Email { get; set; }
+            [Display(Name = "Employer")] public Nullable<int> EmployerId { get; set; }
+
 #pragma warning restore 0649
         }
     }

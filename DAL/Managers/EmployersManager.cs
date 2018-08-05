@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 using DAL.Models;
 
 namespace DAL
@@ -30,11 +31,13 @@ namespace DAL
             {
                 var employers = db.Employers
                     .Where(e => e.Deleted != true)
-                    .Where(e => e.GeneralContractor == null || !independent)
-                    .Include(e => e.SubContractors.Where(s=>s.Deleted!=true))
-                    .Include(e => e.Employees)
-                    .ToList();
-                return employers;
+                    .Where(e => e.GeneralContractor == null || !independent);
+                foreach (var employer in employers)
+                {
+                    employer.SubContractors = employer.SubContractors.Where(s => s.Deleted != true).ToList();
+                    employer.Employees = employer.Employees.Where(e => e.Deleted != true).ToList();
+                }
+                return employers.ToList();
             }
         }
 
@@ -48,11 +51,13 @@ namespace DAL
             using (var db = new RegisterEntities())
             {
                 var subContractors = db.Employers
-                    .Include(e=>e.SubContractors.Select(s=>s.SubContractors))
-                    .Include(e=>e.SubContractors.Select(s=>s.Employees))
-                    .Single(e=>e.Id==id)
-                    .SubContractors
-                    .ToList();
+                    .Single(e => e.Id == id)
+                    .SubContractors;
+                foreach (var subContractor in subContractors)
+                {
+                    subContractor.SubContractors = subContractor.SubContractors.Where(s => s.Deleted != true).ToList();
+                    subContractor.Employees = subContractor.Employees.Where(e => e.Deleted != true).ToList();
+                }
                 return subContractors;
             }
         }
@@ -67,9 +72,11 @@ namespace DAL
             using (var db =new RegisterEntities())
             {
                 var employer = db.Employers
-                    .Include(e=>e.Employees)
-                    .Include(e=>e.SubContractors)
+                    //.Include(e=>e.Employees)
+                    //.Include(e=>e.SubContractors)
                     .Single(e=>e.Id==id);
+                employer.SubContractors = employer.SubContractors.Where(s => s.Deleted != true).ToList();
+                employer.Employees = employer.Employees.Where(e => e.Deleted != true).ToList();
                 return employer;
             }
         }
@@ -93,6 +100,52 @@ namespace DAL
             }
 
             return false;
+        }
+
+
+        public object GetSelectList()
+        {
+            using (var db=new RegisterEntities())
+            {
+                return new SelectList(db.Employers.ToList(), "Id", "Name");
+            }
+        }
+
+
+        public bool Add(Employer employer)
+        {
+            using (var db=new RegisterEntities())
+            {
+                try
+                {
+                    db.Employers.Add(employer);
+                    db.SaveChanges();
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return false;
+                }
+            }
+        }
+
+        public bool Modify(Employer employer)
+        {
+            using (var db=new RegisterEntities())
+            {
+                try
+                {
+                    db.Entry(employer).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return false;
+                }
+            }
         }
     }
 }
